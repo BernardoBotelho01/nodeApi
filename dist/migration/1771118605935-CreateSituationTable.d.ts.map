@@ -1,0 +1,1 @@
+{"version":3,"file":"1771118605935-CreateSituationTable.d.ts","sourceRoot":"","sources":["../../src/migration/1771118605935-CreateSituationTable.ts"],"names":[],"mappings":"AACA,OAAO,KAAK,EAAE,kBAAkB,EAAE,WAAW,EAAC,MAAM,SAAS,CAAC;AAE9D,qBAAa,iCAAkC,YAAW,kBAAkB;IAE3D,EAAE,CAAC,WAAW,EAAE,WAAW,GAAG,OAAO,CAAC,IAAI,CAAC;IA8B3C,IAAI,CAAC,WAAW,EAAE,WAAW,GAAG,OAAO,CAAC,IAAI,CAAC;CAI7D"}
