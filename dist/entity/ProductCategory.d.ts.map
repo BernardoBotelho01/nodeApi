@@ -1,0 +1,1 @@
+{"version":3,"file":"ProductCategory.d.ts","sourceRoot":"","sources":["../../src/entity/ProductCategory.ts"],"names":[],"mappings":"AAAA,OAAO,EAA0C,UAAU,EAAa,MAAM,SAAS,CAAC;AACxF,OAAO,EAAE,OAAO,EAAE,MAAM,cAAc,CAAC;AAEvC,qBACa,eAAgB,SAAQ,UAAU;IAE7C,EAAE,EAAG,MAAM,CAAC;IAGZ,IAAI,EAAG,MAAM,CAAC;IAGd,QAAQ,EAAG,IAAI,CAAC;IAGhB,QAAQ,EAAG,IAAI,CAAC;IAGhB,QAAQ,EAAG,OAAO,EAAE,CAAC;CACtB"}
