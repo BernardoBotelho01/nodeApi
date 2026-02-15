@@ -1,5 +1,5 @@
 import { Table, TableForeignKey } from "typeorm";
-export class CreateUserTable1771109200306 {
+export class CreateUserTable1771126013514 {
     async up(queryRunner) {
         await queryRunner.createTable(new Table({
             name: "users",
@@ -53,4 +53,4 @@ export class CreateUserTable1771109200306 {
         await queryRunner.dropTable("users");
     }
 }
-//# sourceMappingURL=1771118584776-CreateUserTable.js.map
+//# sourceMappingURL=1771126013514-CreateUserTable.js.map

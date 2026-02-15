@@ -10,10 +10,13 @@ export class Product extends BaseEntity {
   @Column()
   name!: string;
 
-  @ManyToOne(() => ProductCategory, (category) => category.products, { onDelete: "CASCADE" })
+  @ManyToOne(() => ProductCategory, (category) => category.products)
   @JoinColumn({ name: "productCategoryId" })
-  @JoinColumn({ name: "productSituationId" })
   productCategory!: ProductCategory;
+
+  @ManyToOne(() => ProductSituation, (situation) => situation.products)
+  @JoinColumn({ name: "productSituationId" })
+  productSituation!: ProductSituation;
 
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   createAt!: Date;

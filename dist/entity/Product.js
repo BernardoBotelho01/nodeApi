@@ -14,6 +14,7 @@ let Product = class Product extends BaseEntity {
     id;
     name;
     productCategory;
+    productSituation;
     createAt;
     updateAt;
 };
@@ -26,11 +27,15 @@ __decorate([
     __metadata("design:type", String)
 ], Product.prototype, "name", void 0);
 __decorate([
-    ManyToOne(() => ProductCategory, (category) => category.products, { onDelete: "CASCADE" }),
+    ManyToOne(() => ProductCategory, (category) => category.products),
     JoinColumn({ name: "productCategoryId" }),
-    JoinColumn({ name: "productSituationId" }),
     __metadata("design:type", ProductCategory)
 ], Product.prototype, "productCategory", void 0);
+__decorate([
+    ManyToOne(() => ProductSituation, (situation) => situation.products),
+    JoinColumn({ name: "productSituationId" }),
+    __metadata("design:type", ProductSituation)
+], Product.prototype, "productSituation", void 0);
 __decorate([
     Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" }),
     __metadata("design:type", Date)

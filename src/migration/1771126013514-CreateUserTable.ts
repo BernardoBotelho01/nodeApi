@@ -1,10 +1,10 @@
 import { Table, TableForeignKey } from "typeorm";
-import type{ MigrationInterface, QueryRunner } from "typeorm";
+import type { MigrationInterface, QueryRunner } from "typeorm";
 
-export class CreateUserTable1771109200306 implements MigrationInterface {
+export class CreateUserTable1771126013514 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.createTable(new Table({
+         await queryRunner.createTable(new Table({
                     name: "users",
                     columns: [
                         {
@@ -65,4 +65,3 @@ export class CreateUserTable1771109200306 implements MigrationInterface {
     }
 
 }
-

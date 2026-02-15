@@ -1,9 +1,6 @@
-import { Table } from "typeorm";
-import type { MigrationInterface, QueryRunner} from "typeorm";
-
-export class CreateSituationTable1771108912406 implements MigrationInterface {
-
-    public async up(queryRunner: QueryRunner): Promise<void> {
+import { Table, TableForeignKey } from "typeorm";
+export class CreateSituationTable1771125994966 {
+    async up(queryRunner) {
         await queryRunner.createTable(new Table({
             name: "situations",
             columns: [
@@ -32,10 +29,8 @@ export class CreateSituationTable1771108912406 implements MigrationInterface {
             ]
         }));
     }
-
-    public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.dropTable("situations")
+    async down(queryRunner) {
+        await queryRunner.dropTable("situations");
     }
-
 }
-
+//# sourceMappingURL=1771125994966-CreateSituationTable.js.map
