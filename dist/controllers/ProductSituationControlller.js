@@ -19,5 +19,19 @@ router.post("/situacaoproduto", async (req, res) => {
         });
     }
 });
+router.get("/situacaoproduto", async (req, res) => {
+    try {
+        const productSituationRepository = AppDataSource.getRepository(ProductSituation);
+        const productSituation = await productSituationRepository.find();
+        res.status(200).json(productSituation);
+        return;
+    }
+    catch (error) {
+        res.status(404).json({
+            messagem: "Error ao listar situação de produtos!"
+        });
+        return;
+    }
+});
 export default router;
 //# sourceMappingURL=ProductSituationControlller.js.map

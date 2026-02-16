@@ -28,5 +28,21 @@ router.post("/categoriaproduto",async(req:Request, res:Response)=>{
     }
 });
 
+router.get("/categoriaproduto",async(req:Request, res:Response)=>{
+
+    try{
+    const productCategoryRepository = AppDataSource.getRepository(ProductCategory);
+    const productCategory = await productCategoryRepository.find();
+
+    res.status(200).json(productCategory);
+    return
+    }
+    catch(error){
+        res.status(404).json({
+            messagem: "Error ao listar categorias de produtos!"
+        });
+        return
+    }
+});
 
 export default router

@@ -23,5 +23,19 @@ router.post("/usuario", async (req, res) => {
         });
     }
 });
+router.get("/usuario", async (req, res) => {
+    try {
+        const userRepository = AppDataSource.getRepository(User);
+        const user = await userRepository.find();
+        res.status(200).json(user);
+        return;
+    }
+    catch (error) {
+        res.status(404).json({
+            messagem: "Error ao listar usuarios!"
+        });
+        return;
+    }
+});
 export default router;
 //# sourceMappingURL=UserController.js.map

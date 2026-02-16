@@ -31,4 +31,21 @@ router.post("/produto", async (req: Request, res: Response) => {
   }
 });
 
+router.get("/produto",async(req:Request, res:Response)=>{
+
+    try{
+    const productRepository = AppDataSource.getRepository(Product);
+    const product = await productRepository.find();
+
+    res.status(200).json(product);
+    return
+    }
+    catch(error){
+        res.status(404).json({
+            messagem: "Error ao listar produtos!"
+        });
+        return
+    }
+});
+
 export default router;
