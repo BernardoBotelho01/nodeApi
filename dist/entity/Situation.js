@@ -21,7 +21,7 @@ __decorate([
     __metadata("design:type", Number)
 ], Situation.prototype, "id", void 0);
 __decorate([
-    Column(),
+    Column({ unique: true }),
     __metadata("design:type", String)
 ], Situation.prototype, "nameSituation", void 0);
 __decorate([

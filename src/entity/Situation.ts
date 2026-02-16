@@ -6,7 +6,7 @@ export class Situation extends BaseEntity {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column()
+  @Column({unique: true})
   nameSituation!: string;
 
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })

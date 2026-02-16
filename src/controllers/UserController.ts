@@ -4,7 +4,7 @@ import { AppDataSource } from "../data-source.js";
 import {User} from "../entity/User.js"
 
 const router = express.Router();
-
+// cadastrar
 router.post("/usuario",async(req:Request, res:Response)=>{
     try{
 
@@ -28,13 +28,13 @@ router.post("/usuario",async(req:Request, res:Response)=>{
     }
     catch(error)
     {
-        res.status(404).json({
-            messagem: "Error ao cadastradar usuario!"
+        res.status(500).json({
+            messagem: "Algo deu errado no processamento!"
         });
     }
 });
 
-
+//listar
 router.get("/usuario",async(req:Request, res:Response)=>{
 
     try{
@@ -45,8 +45,94 @@ router.get("/usuario",async(req:Request, res:Response)=>{
     return
     }
     catch(error){
-        res.status(404).json({
+        res.status(500).json({
             messagem: "Error ao listar usuarios!"
+        });
+        return
+    }
+});
+//listar por id
+router.get("/usuario/:id",async(req:Request, res:Response)=>{
+
+    try{
+    const id = Number(req.params.id);
+    const userRepository = AppDataSource.getRepository(User);
+    const user = await userRepository.findOneBy({id});
+
+    if(!user){
+        return res.status(404).json({
+            messagem: "Id do usuario não encontrado!"
+        })
+    }
+
+    res.status(200).json(user);
+    return
+    }
+    catch(error){
+        res.status(500).json({
+            messagem: "Algo deu errado no processamento!"
+        });
+        return
+    }
+});
+//atualizar
+router.put("/usuario/:id",async(req:Request, res:Response)=>{
+
+    try{
+    const id = Number(req.params.id);
+
+    const data = req.body;
+    const userRepository = AppDataSource.getRepository(User);
+    const user = await userRepository.findOneBy({id});
+
+    if(!user){
+        return res.status(404).json({
+            messagem: "Id do usuario não encontrado!"
+        })
+    }
+
+    userRepository.merge(user, data);
+
+    const update = await userRepository.save(user);
+
+    res.status(200).json({
+        messagem:  "Usuario atualizado com sucesso!",
+        user: update
+    });
+       
+    }
+    catch(error){
+        res.status(500).json({
+            messagem: "Algo deu errado no processamento!"
+        });
+        return
+    }
+});
+
+//deletar
+router.delete("/usuario/:id",async(req:Request, res:Response)=>{
+
+    try{
+    const id = Number(req.params.id);
+    const userRepository = AppDataSource.getRepository(User);
+    const user = await userRepository.findOneBy({id});
+
+    if(!user){
+        return res.status(404).json({
+            messagem: "Id do usuario não encontrado!"
+        })
+    }
+
+    await userRepository.remove(user);
+
+    res.status(200).json({
+        messagem:  "Usuario removido com sucesso!"
+    });
+       
+    }
+    catch(error){
+        res.status(500).json({
+            messagem: "Algo deu errado no processamento!"
         });
         return
     }

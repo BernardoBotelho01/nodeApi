@@ -18,6 +18,7 @@ export class CreateProductSituationTable1771126034783 implements MigrationInterf
           {
             name: "name",
             type: "varchar",
+            isUnique: true,
           },
           {
             name: "createAt",

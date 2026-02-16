@@ -14,6 +14,7 @@ export class CreateProductSituationTable1771126034783 {
                 {
                     name: "name",
                     type: "varchar",
+                    isUnique: true,
                 },
                 {
                     name: "createAt",
