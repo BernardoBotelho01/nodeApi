@@ -2,6 +2,7 @@ import express from "express";
 import type { Request, Response } from "express";
 import { AppDataSource } from "../data-source.js";
 import { Product } from "../entity/Product.js";
+import { PaginationService } from "../services/PaginationService.js";
 
 const router = express.Router();
 //cadastar
@@ -36,6 +37,19 @@ router.get("/produto",async(req:Request, res:Response)=>{
     try{
     const productRepository = AppDataSource.getRepository(Product);
     const product = await productRepository.find();
+
+    //paginação
+
+    // Receber o numero da página e definir página 1 como padrão
+        const page = Number(req.query.page) || 1;
+    //Definir o limite de registro por páginas
+        const limite = Number(req.query.limite) || 10;
+    
+        const result = await PaginationService.paginate(productRepository, page, limite, {id: "DESC"});
+    
+        res.status(200).json(result);
+        return
+    //fim paginação
 
     res.status(200).json(product);
     return

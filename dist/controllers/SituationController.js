@@ -1,6 +1,7 @@
 import express from "express";
 import { AppDataSource } from "../data-source.js";
 import { Situation } from "../entity/Situation.js";
+import { PaginationService } from "../services/PaginationService.js";
 const router = express.Router();
 //cadastrar
 router.post("/situacao", async (req, res) => {
@@ -25,6 +26,15 @@ router.get("/situacao", async (req, res) => {
     try {
         const situationRepository = AppDataSource.getRepository(Situation);
         const situations = await situationRepository.find();
+        //paginação
+        // Receber o numero da página e definir página 1 como padrão
+        const page = Number(req.query.page) || 1;
+        //Definir o limite de registro por páginas
+        const limite = Number(req.query.limite) || 10;
+        const result = await PaginationService.paginate(situationRepository, page, limite, { id: "DESC" });
+        res.status(200).json(result);
+        return;
+        //fim paginação
         res.status(200).json(situations);
         return;
     }
