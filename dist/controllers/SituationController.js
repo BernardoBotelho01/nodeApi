@@ -2,7 +2,7 @@ import express from "express";
 import { AppDataSource } from "../data-source.js";
 import { Situation } from "../entity/Situation.js";
 const router = express.Router();
-router.post("/situations", async (req, res) => {
+router.post("/situacao", async (req, res) => {
     try {
         var data = req.body;
         const situationRepository = AppDataSource.getRepository(Situation);
@@ -14,8 +14,8 @@ router.post("/situations", async (req, res) => {
         });
     }
     catch (error) {
-        res.status(500).json({
-            messagem: "Error ao cadastrada situação!"
+        res.status(404).json({
+            messagem: "Error ao cadastradar situação!"
         });
     }
 });

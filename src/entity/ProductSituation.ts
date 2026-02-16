@@ -15,6 +15,6 @@ export class ProductSituation extends BaseEntity {
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP", onUpdate: "CURRENT_TIMESTAMP" })
   updateAt!: Date;
 
-  @OneToMany(() => Product, (product) => product.productCategory)
+  @OneToMany(() => Product, (product) => product.productSituation)
   products!: Product[];
 }

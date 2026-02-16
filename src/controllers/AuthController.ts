@@ -5,7 +5,7 @@ import type{Request, Response} from "express";
 const router = express.Router();
 
 
-router.get("/",(req:Request, res:Response)=>{
+router.get("/situations",(req:Request, res:Response)=>{
     res.send("Bem vindo  kkkkkk")
 })
 

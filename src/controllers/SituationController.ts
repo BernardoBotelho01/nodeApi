@@ -7,7 +7,7 @@ import {Situation} from "../entity/Situation.js"
 const router = express.Router();
 
 
-router.post("/situations",async(req:Request, res:Response)=>{
+router.post("/situacao",async(req:Request, res:Response)=>{
     try{
 
         var data = req.body;
@@ -24,10 +24,10 @@ router.post("/situations",async(req:Request, res:Response)=>{
     }
     catch(error)
     {
-        res.status(500).json({
-            messagem: "Error ao cadastrada situação!"
+        res.status(404).json({
+            messagem: "Error ao cadastradar situação!"
         });
     }
-})
+});
 
 export default router

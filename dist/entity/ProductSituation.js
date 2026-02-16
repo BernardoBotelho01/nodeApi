@@ -33,7 +33,7 @@ __decorate([
     __metadata("design:type", Date)
 ], ProductSituation.prototype, "updateAt", void 0);
 __decorate([
-    OneToMany(() => Product, (product) => product.productCategory),
+    OneToMany(() => Product, (product) => product.productSituation),
     __metadata("design:type", Array)
 ], ProductSituation.prototype, "products", void 0);
 ProductSituation = __decorate([
