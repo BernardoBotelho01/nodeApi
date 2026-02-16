@@ -95,7 +95,7 @@ router.delete("/situacao/:id", async (req, res) => {
         }
         await situationRepository.remove(situation);
         res.status(200).json({
-            messagem: "Situação  com sucesso!",
+            messagem: "Situação removida com sucesso!",
         });
     }
     catch (error) {
