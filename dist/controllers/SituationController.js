@@ -2,11 +2,18 @@ import express from "express";
 import { AppDataSource } from "../data-source.js";
 import { Situation } from "../entity/Situation.js";
 import { PaginationService } from "../services/PaginationService.js";
+import * as yup from 'yup';
 const router = express.Router();
 //cadastrar
 router.post("/situacao", async (req, res) => {
     try {
-        var data = req.body;
+        const data = req.body;
+        const schema = yup.object().shape({
+            nameSituation: yup.string()
+                .required("O campo nome e obrigatorio!")
+                .min(3, "Campo nome deve ter no minimo 3 caracteres!")
+        });
+        await schema.validate(data, { abortEarly: false });
         const situationRepository = AppDataSource.getRepository(Situation);
         const newSituation = situationRepository.create(data);
         await situationRepository.save(newSituation);
@@ -16,7 +23,13 @@ router.post("/situacao", async (req, res) => {
         });
     }
     catch (error) {
-        res.status(404).json({
+        if (error instanceof yup.ValidationError) {
+            res.status(400).json({
+                messagem: error.errors
+            });
+            return;
+        }
+        res.status(500).json({
             messagem: "Error ao cadastradar situação!"
         });
     }
@@ -70,26 +83,40 @@ router.get("/situacao/:id", async (req, res) => {
 router.put("/situacao/:id", async (req, res) => {
     try {
         const id = Number(req.params.id);
-        const data = req.body;
         const situationRepository = AppDataSource.getRepository(Situation);
         const situation = await situationRepository.findOneBy({ id });
         if (!situation) {
             return res.status(404).json({
-                messagem: "Id da situação não encontrada!"
+                messagem: "Id da situação não encontrada!",
             });
         }
-        situationRepository.merge(situation, data);
+        const { nameSituation } = req.body;
+        const schema = yup.object({
+            nameSituation: yup
+                .string()
+                .required("O campo nome é obrigatório!")
+                .min(3, "Campo nome deve ter no mínimo 3 caracteres!"),
+        });
+        await schema.validate({ nameSituation }, { abortEarly: false });
+        situationRepository.merge(situation, {
+            nameSituation,
+        });
         const update = await situationRepository.save(situation);
-        res.status(200).json({
+        return res.status(200).json({
             messagem: "Situação atualizada com sucesso!",
-            situation: update
+            situation: update,
         });
     }
     catch (error) {
-        res.status(500).json({
-            messagem: "Algo deu errado no processamento!"
+        if (error instanceof yup.ValidationError) {
+            res.status(404).json({
+                messagem: error.errors
+            });
+            return;
+        }
+        return res.status(500).json({
+            messagem: "Algo deu errado no processamento!",
         });
-        return;
     }
 });
 //deletar

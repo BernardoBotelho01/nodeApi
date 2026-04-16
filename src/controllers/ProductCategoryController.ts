@@ -3,6 +3,7 @@ import type{Request, Response} from "express";
 import { AppDataSource } from "../data-source.js";
 import {ProductCategory} from "../entity/ProductCategory.js"
 import { PaginationService } from "../services/PaginationService.js";
+import * as yup from 'yup';
 
 const router = express.Router();
 
@@ -11,6 +12,14 @@ router.post("/categoriaproduto",async(req:Request, res:Response)=>{
     try{
 
         var data = req.body;
+
+        const schema = yup.object().shape({
+                    name: yup.string()
+                    .required("O campo nome e obrigatorio!")
+                    .min(5, "Campo nome deve ter no minimo 5 caracteres, ex: ALIMENTOS, ROUPAS ETC...!")
+                });
+            await schema.validate(data, {abortEarly: false});
+
         const productCategoryRepository = AppDataSource.getRepository(ProductCategory);
         const newProductCategory = productCategoryRepository.create(data);
 
@@ -24,6 +33,12 @@ router.post("/categoriaproduto",async(req:Request, res:Response)=>{
     }
     catch(error)
     {
+        if(error instanceof yup.ValidationError){
+                       res.status(400).json({
+                       messagem: error.errors
+                   });
+                   return;
+                }
         res.status(500).json({
             messagem: "Error ao cadastradar categoria do produto!"
         });
@@ -89,7 +104,6 @@ router.put("/categoriaproduto/:id",async(req:Request, res:Response)=>{
 
     try{
     const id = Number(req.params.id);
-    const data = req.body;
     const productCategoryRepository = AppDataSource.getRepository(ProductCategory);
     const productCategory = await productCategoryRepository.findOneBy({id});
 
@@ -99,7 +113,19 @@ router.put("/categoriaproduto/:id",async(req:Request, res:Response)=>{
         })
     }
 
-    productCategoryRepository.merge(productCategory, data);
+    const { name } = req.body;
+    
+        const schema = yup.object({
+          name: yup
+            .string()
+            .required("O campo nome é obrigatório!")
+            .min(5, "Campo nome deve ter no mínimo 5 caracteres, ex: ATIVO, INATIVO etc...!"),
+        });
+
+    await schema.validate(
+      { name },
+      { abortEarly: false }
+    );
 
     const update = await productCategoryRepository.save(productCategory);
 
@@ -109,6 +135,13 @@ router.put("/categoriaproduto/:id",async(req:Request, res:Response)=>{
     });
     }
     catch(error){
+
+        if(error instanceof yup.ValidationError){
+                       res.status(400).json({
+                       messagem: error.errors
+                   });
+                   return;
+                }
         res.status(500).json({
             messagem: "Algo deu errado no processamento!"
         });

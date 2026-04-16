@@ -2,11 +2,26 @@ import express from "express";
 import { AppDataSource } from "../data-source.js";
 import { User } from "../entity/User.js";
 import { PaginationService } from "../services/PaginationService.js";
+import * as yup from 'yup';
 const router = express.Router();
 // cadastrar
 router.post("/usuario", async (req, res) => {
     try {
         const { name, email, situationId } = req.body;
+        const schema = yup.object({
+            name: yup
+                .string()
+                .required("O campo nome é obrigatório!")
+                .min(3, "O nome deve ter no mínimo 3 caracteres!"),
+            email: yup
+                .string()
+                .required("O campo email é obrigatório!")
+                .email("Informe um email válido!"),
+            situationId: yup
+                .string()
+                .required("O campo situationId é obrigatório!"),
+        });
+        await schema.validate({ name, email, situationId }, { abortEarly: false });
         const userRepository = AppDataSource.getRepository(User);
         const newUser = userRepository.create({
             name,
@@ -20,6 +35,12 @@ router.post("/usuario", async (req, res) => {
         });
     }
     catch (error) {
+        if (error instanceof yup.ValidationError) {
+            res.status(400).json({
+                messagem: error.errors
+            });
+            return;
+        }
         res.status(500).json({
             messagem: "Algo deu errado no processamento!"
         });
@@ -70,30 +91,56 @@ router.get("/usuario/:id", async (req, res) => {
         return;
     }
 });
-//atualizar
+//Atualizar
 router.put("/usuario/:id", async (req, res) => {
     try {
         const id = Number(req.params.id);
-        const data = req.body;
         const userRepository = AppDataSource.getRepository(User);
-        const user = await userRepository.findOneBy({ id });
+        const user = await userRepository.findOne({
+            where: { id },
+            relations: ["situation"],
+        });
         if (!user) {
             return res.status(404).json({
-                messagem: "Id do usuario não encontrado!"
+                messagem: "Id do usuário não encontrado!",
             });
         }
-        userRepository.merge(user, data);
+        const { name, email, situationId } = req.body;
+        const schema = yup.object({
+            name: yup
+                .string()
+                .required("O campo nome é obrigatório!")
+                .min(3, "O nome deve ter no mínimo 3 caracteres!"),
+            email: yup
+                .string()
+                .required("O campo email é obrigatório!")
+                .email("Informe um email válido!"),
+            situationId: yup
+                .string()
+                .required("O campo situationId é obrigatório!"),
+        });
+        await schema.validate({ name, email, situationId }, { abortEarly: false });
+        userRepository.merge(user, {
+            name,
+            email,
+            situation: { id: Number(situationId) },
+        });
         const update = await userRepository.save(user);
-        res.status(200).json({
-            messagem: "Usuario atualizado com sucesso!",
-            user: update
+        return res.status(200).json({
+            messagem: "Usuário atualizado com sucesso!",
+            user: update,
         });
     }
     catch (error) {
-        res.status(500).json({
-            messagem: "Algo deu errado no processamento!"
+        if (error instanceof yup.ValidationError) {
+            res.status(400).json({
+                messagem: error.errors
+            });
+            return;
+        }
+        return res.status(500).json({
+            messagem: "Algo deu errado no processamento!",
         });
-        return;
     }
 });
 //deletar

@@ -3,6 +3,7 @@ import type{Request, Response} from "express";
 import { AppDataSource } from "../data-source.js";
 import {ProductSituation} from "../entity/ProductSituation.js"
 import { PaginationService } from "../services/PaginationService.js";
+import * as yup from 'yup';
 
 const router = express.Router();
 
@@ -10,7 +11,14 @@ const router = express.Router();
 router.post("/situacaoproduto",async(req:Request, res:Response)=>{
     try{
 
-        var data = req.body;
+        const data = req.body;
+            const schema = yup.object().shape({
+            name: yup.string()
+            .required("O campo nome e obrigatorio!")
+            .min(5, "Campo nome deve ter no minimo 5 caracteres, ex: ATIVO, INATIVO ETC...!")
+        });
+        await schema.validate(data, {abortEarly: false});
+
         const productSituationRepository = AppDataSource.getRepository(ProductSituation);
         const newProductSituation = productSituationRepository.create(data);
 
@@ -24,6 +32,12 @@ router.post("/situacaoproduto",async(req:Request, res:Response)=>{
     }
     catch(error)
     {
+        if(error instanceof yup.ValidationError){
+                    res.status(400).json({
+                    messagem: error.errors
+                });
+                return;
+            }
         res.status(500).json({
             messagem: "Error ao cadastradar situação do produto!"
         });
@@ -85,38 +99,56 @@ router.get("/situacaoproduto/:id",async(req:Request, res:Response)=>{
 });
 
 //atualizar
-router.put("/situacaoproduto/:id",async(req:Request, res:Response)=>{
-
-    try{
+router.put("/situacaoproduto/:id", async (req: Request, res: Response) => {
+  try {
     const id = Number(req.params.id);
-    const data = req.body;
+
     const productSituationRepository = AppDataSource.getRepository(ProductSituation);
-    const productSituation = await productSituationRepository.findOneBy({id});
+    const productSituation = await productSituationRepository.findOneBy({ id });
 
-    if(!productSituation){
-        return res.status(404).json({
-            messagem: "Id da situaçao do produto não encontrado!"
-        })
+    if (!productSituation) {
+      return res.status(404).json({
+        messagem: "Id da situação do produto não encontrado!",
+      });
     }
 
-    productSituationRepository.merge(productSituation, data);
+    const { name } = req.body;
 
-    const update = await productSituationRepository.save(productSituation)
-
-    res.status(200).json({
-        messagem: "Situação do produto atualizada com sucesso!",
-        productSituation: update
+    const schema = yup.object({
+      name: yup
+        .string()
+        .required("O campo nome é obrigatório!")
+        .min(5, "Campo nome deve ter no mínimo 5 caracteres, ex: ATIVO, INATIVO etc...!"),
     });
-    
-    }
-    catch(error){
-        res.status(500).json({
-            messagem: "Algo deu errado no processamento!"
-        });
-        return
-    }
-});
 
+    await schema.validate(
+      { name },
+      { abortEarly: false }
+    );
+
+    productSituationRepository.merge(productSituation, {
+      name,
+    });
+
+    const update = await productSituationRepository.save(productSituation);
+
+    return res.status(200).json({
+      messagem: "Situação do produto atualizada com sucesso!",
+      productSituation: update,
+    });
+  } catch (error) {
+    if(error instanceof yup.ValidationError){
+        res.status(404).json({
+        messagem: error.errors
+        });
+        return;
+    }
+
+    return res.status(500).json({
+      messagem: "Algo deu errado no processamento!",
+    });
+  }
+});
 //deletar
 router.delete("/situacaoproduto/:id",async(req:Request, res:Response)=>{
 
