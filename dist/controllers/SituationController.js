@@ -3,6 +3,7 @@ import { AppDataSource } from "../data-source.js";
 import { Situation } from "../entity/Situation.js";
 import { PaginationService } from "../services/PaginationService.js";
 import * as yup from 'yup';
+import { Not } from "typeorm";
 const router = express.Router();
 //cadastrar
 router.post("/situacao", async (req, res) => {
@@ -15,6 +16,15 @@ router.post("/situacao", async (req, res) => {
         });
         await schema.validate(data, { abortEarly: false });
         const situationRepository = AppDataSource.getRepository(Situation);
+        const existeSituation = await situationRepository.findOne({
+            where: { nameSituation: data.nameSituation }
+        });
+        if (existeSituation) {
+            res.status(400).json({
+                messagem: "Já existe uma situação cadastrada com esse nome!"
+            });
+            return;
+        }
         const newSituation = situationRepository.create(data);
         await situationRepository.save(newSituation);
         res.status(201).json({
@@ -98,6 +108,17 @@ router.put("/situacao/:id", async (req, res) => {
                 .min(3, "Campo nome deve ter no mínimo 3 caracteres!"),
         });
         await schema.validate({ nameSituation }, { abortEarly: false });
+        const existeSituation = await situationRepository.findOne({
+            where: {
+                nameSituation,
+                id: Not(id),
+            },
+        });
+        if (existeSituation) {
+            return res.status(400).json({
+                messagem: "Já existe uma situação cadastrada com esse nome!",
+            });
+        }
         situationRepository.merge(situation, {
             nameSituation,
         });
@@ -109,10 +130,9 @@ router.put("/situacao/:id", async (req, res) => {
     }
     catch (error) {
         if (error instanceof yup.ValidationError) {
-            res.status(404).json({
-                messagem: error.errors
+            return res.status(400).json({
+                messagem: error.errors,
             });
-            return;
         }
         return res.status(500).json({
             messagem: "Algo deu errado no processamento!",

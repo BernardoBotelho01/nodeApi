@@ -3,6 +3,7 @@ import { AppDataSource } from "../data-source.js";
 import { ProductCategory } from "../entity/ProductCategory.js";
 import { PaginationService } from "../services/PaginationService.js";
 import * as yup from 'yup';
+import { Not } from "typeorm";
 const router = express.Router();
 //cadastrar
 router.post("/categoriaproduto", async (req, res) => {
@@ -15,6 +16,15 @@ router.post("/categoriaproduto", async (req, res) => {
         });
         await schema.validate(data, { abortEarly: false });
         const productCategoryRepository = AppDataSource.getRepository(ProductCategory);
+        const existeSituation = await productCategoryRepository.findOne({
+            where: { name: data.name }
+        });
+        if (existeSituation) {
+            res.status(400).json({
+                messagem: "Já existe uma categoria de produto cadastrada com esse nome!"
+            });
+            return;
+        }
         const newProductCategory = productCategoryRepository.create(data);
         await productCategoryRepository.save(newProductCategory);
         res.status(201).json({
@@ -95,9 +105,23 @@ router.put("/categoriaproduto/:id", async (req, res) => {
             name: yup
                 .string()
                 .required("O campo nome é obrigatório!")
-                .min(5, "Campo nome deve ter no mínimo 5 caracteres, ex: ATIVO, INATIVO etc...!"),
+                .min(5, "Campo nome deve ter no mínimo 5 caracteres, ex: Roupas, Eletronicos etc...!"),
         });
         await schema.validate({ name }, { abortEarly: false });
+        const existeSituation = await productCategoryRepository.findOne({
+            where: {
+                name,
+                id: Not(id),
+            },
+        });
+        if (existeSituation) {
+            return res.status(400).json({
+                messagem: "Já existe uma categoria de produto cadastrada com esse nome!",
+            });
+        }
+        productCategoryRepository.merge(productCategory, {
+            name,
+        });
         const update = await productCategoryRepository.save(productCategory);
         res.status(200).json({
             messagem: "Categoria do produto atualizada com sucesso!",

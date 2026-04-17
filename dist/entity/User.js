@@ -26,7 +26,7 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "name", void 0);
 __decorate([
-    Column({ unique: true }),
+    Column(),
     __metadata("design:type", String)
 ], User.prototype, "email", void 0);
 __decorate([

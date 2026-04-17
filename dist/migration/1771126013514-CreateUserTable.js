@@ -17,8 +17,7 @@ export class CreateUserTable1771126013514 {
                 },
                 {
                     name: "email",
-                    type: "varchar",
-                    isUnique: true
+                    type: "varchar"
                 },
                 {
                     name: "situationId",

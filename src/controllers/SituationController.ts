@@ -4,6 +4,7 @@ import { AppDataSource } from "../data-source.js";
 import {Situation} from "../entity/Situation.js"
 import { PaginationService } from "../services/PaginationService.js";
 import * as yup from 'yup';
+import { Not } from "typeorm";
 
 
 const router = express.Router();
@@ -21,6 +22,18 @@ router.post("/situacao",async(req:Request, res:Response)=>{
         await schema.validate(data, {abortEarly: false});
 
         const situationRepository = AppDataSource.getRepository(Situation);
+
+        const existeSituation = await situationRepository.findOne({
+            where: {nameSituation: data.nameSituation}
+        });
+
+        if(existeSituation){
+           res.status(400).json({
+            messagem: "Já existe uma situação cadastrada com esse nome!"
+           });
+           return;
+        }
+
         const newSituation = situationRepository.create(data);
 
         await situationRepository.save(newSituation);
@@ -105,6 +118,7 @@ router.put("/situacao/:id", async (req: Request, res: Response) => {
     const id = Number(req.params.id);
 
     const situationRepository = AppDataSource.getRepository(Situation);
+
     const situation = await situationRepository.findOneBy({ id });
 
     if (!situation) {
@@ -127,6 +141,19 @@ router.put("/situacao/:id", async (req: Request, res: Response) => {
       { abortEarly: false }
     );
 
+    const existeSituation = await situationRepository.findOne({
+      where: {
+        nameSituation,
+        id: Not(id),
+      },
+    });
+
+    if (existeSituation) {
+      return res.status(400).json({
+        messagem: "Já existe uma situação cadastrada com esse nome!",
+      });
+    }
+
     situationRepository.merge(situation, {
       nameSituation,
     });
@@ -138,11 +165,10 @@ router.put("/situacao/:id", async (req: Request, res: Response) => {
       situation: update,
     });
   } catch (error) {
-    if(error instanceof yup.ValidationError){
-        res.status(404).json({
-        messagem: error.errors
-        });
-    return;
+    if (error instanceof yup.ValidationError) {
+      return res.status(400).json({
+        messagem: error.errors,
+      });
     }
 
     return res.status(500).json({
@@ -150,6 +176,7 @@ router.put("/situacao/:id", async (req: Request, res: Response) => {
     });
   }
 });
+
 
 //deletar
 router.delete("/situacao/:id",async(req:Request, res:Response)=>{

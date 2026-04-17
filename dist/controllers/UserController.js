@@ -3,6 +3,7 @@ import { AppDataSource } from "../data-source.js";
 import { User } from "../entity/User.js";
 import { PaginationService } from "../services/PaginationService.js";
 import * as yup from 'yup';
+import { Not } from "typeorm";
 const router = express.Router();
 // cadastrar
 router.post("/usuario", async (req, res) => {
@@ -23,6 +24,15 @@ router.post("/usuario", async (req, res) => {
         });
         await schema.validate({ name, email, situationId }, { abortEarly: false });
         const userRepository = AppDataSource.getRepository(User);
+        const existeSituation = await userRepository.findOne({
+            where: { email }
+        });
+        if (existeSituation) {
+            res.status(400).json({
+                messagem: "Já existe um email cadastrado com esse nome!"
+            });
+            return;
+        }
         const newUser = userRepository.create({
             name,
             email,
@@ -120,6 +130,17 @@ router.put("/usuario/:id", async (req, res) => {
                 .required("O campo situationId é obrigatório!"),
         });
         await schema.validate({ name, email, situationId }, { abortEarly: false });
+        const existeSituation = await userRepository.findOne({
+            where: {
+                email,
+                id: Not(id),
+            },
+        });
+        if (existeSituation) {
+            return res.status(400).json({
+                messagem: "Já existe um email cadastrado com esse nome!",
+            });
+        }
         userRepository.merge(user, {
             name,
             email,

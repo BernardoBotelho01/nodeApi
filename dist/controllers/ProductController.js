@@ -3,6 +3,7 @@ import { AppDataSource } from "../data-source.js";
 import { Product } from "../entity/Product.js";
 import { PaginationService } from "../services/PaginationService.js";
 import * as yup from 'yup';
+import { Not } from "typeorm";
 const router = express.Router();
 //cadastar
 router.post("/produto", async (req, res) => {
@@ -22,6 +23,15 @@ router.post("/produto", async (req, res) => {
         });
         await schema.validate({ name, productCategoryId, productSituationId }, { abortEarly: false });
         const productRepository = AppDataSource.getRepository(Product);
+        const existeSituation = await productRepository.findOne({
+            where: { name }
+        });
+        if (existeSituation) {
+            res.status(400).json({
+                messagem: "Já existe um produto cadastrado com esse nome!"
+            });
+            return;
+        }
         const newProduct = productRepository.create({
             name,
             productCategory: { id: productCategoryId },
@@ -116,6 +126,17 @@ router.put("/produto/:id", async (req, res) => {
                 .required("O campo productSituationId é obrigatório!"),
         });
         await schema.validate({ name, productCategoryId, productSituationId }, { abortEarly: false });
+        const existeSituation = await productRepository.findOne({
+            where: {
+                name,
+                id: Not(id),
+            },
+        });
+        if (existeSituation) {
+            return res.status(400).json({
+                messagem: "Já existe um produto cadastrado com esse nome!",
+            });
+        }
         productRepository.merge(product, {
             name,
             productCategory: { id: Number(productCategoryId) },

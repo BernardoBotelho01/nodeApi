@@ -9,7 +9,7 @@ export class User extends BaseEntity {
   @Column()
   name!: string;
 
-  @Column({ unique: true })
+  @Column()
   email!: string;
 
   @ManyToOne(() => Situation, (situation) => situation.users)
