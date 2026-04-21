@@ -2,26 +2,24 @@ import { DataSource } from "typeorm";
 import { User } from "../entity/User.js";
 import { Situation } from "../entity/Situation.js";
 export default class CreateUserSeeds {
-    async run(dataSourse) {
-        console.log("Iniciando o seed para a tabela `User´...");
-        const userRepository = dataSourse.getRepository(User);
-        const situationRepository = dataSourse.getRepository(Situation);
+    async run(dataSource) {
+        console.log("Iniciando o seed para a tabela `User`...");
+        const userRepository = dataSource.getRepository(User);
+        const situationRepository = dataSource.getRepository(Situation);
+        const metadata = dataSource.getMetadata(User);
+        console.log("Colunas de User:", metadata.columns.map(column => column.propertyName));
         const existingCount = await userRepository.count();
-        if (existingCount) {
-            console.log("A tabela `users´ ja posssui dados. Nenhuma alteração foi realizada!");
+        if (existingCount > 0) {
+            console.log("A tabela `users` ja possui dados. Nenhuma alteração foi realizada!");
             return;
         }
-        // Busca as situations já cadastradas
         const ativo = await situationRepository.findOne({
-            where: { nameSituation: "Ativo" }
+            where: { nameSituation: "Ativo" },
         });
         const inativo = await situationRepository.findOne({
-            where: { nameSituation: "Inativo" }
+            where: { nameSituation: "Inativo" },
         });
-        const pendente = await situationRepository.findOne({
-            where: { nameSituation: "Pendente" }
-        });
-        if (!ativo || !inativo || !pendente) {
+        if (!ativo || !inativo) {
             console.log("Situações necessárias não encontradas. Execute o seed de Situation primeiro.");
             return;
         }
@@ -29,11 +27,13 @@ export default class CreateUserSeeds {
             {
                 name: "João Silva",
                 email: "joao@email.com",
+                password: "123456",
                 situation: ativo
             },
             {
                 name: "Maria Souza",
                 email: "maria@email.com",
+                password: "123457",
                 situation: inativo
             }
         ];

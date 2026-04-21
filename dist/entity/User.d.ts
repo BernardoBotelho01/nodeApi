@@ -4,6 +4,7 @@ export declare class User extends BaseEntity {
     id: number;
     name: string;
     email: string;
+    password: string;
     situation: Situation;
     createAt: Date;
     updateAt: Date;

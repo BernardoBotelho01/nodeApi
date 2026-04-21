@@ -4,6 +4,9 @@ import { ProductSituation } from "./ProductSituation.js";
 export declare class Product extends BaseEntity {
     id: number;
     name: string;
+    slug: string;
+    description: string;
+    price: number;
     productCategory: ProductCategory;
     productSituation: ProductSituation;
     createAt: Date;

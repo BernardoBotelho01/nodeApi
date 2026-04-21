@@ -16,10 +16,10 @@ router.post("/situacaoproduto", async (req, res) => {
         });
         await schema.validate(data, { abortEarly: false });
         const productSituationRepository = AppDataSource.getRepository(ProductSituation);
-        const existeSituation = await productSituationRepository.findOne({
+        const existeprodutoSituacao = await productSituationRepository.findOne({
             where: { name: data.name }
         });
-        if (existeSituation) {
+        if (existeprodutoSituacao) {
             res.status(400).json({
                 messagem: "Já existe uma situação de produto cadastrada com esse nome!"
             });
@@ -101,7 +101,7 @@ router.put("/situacaoproduto/:id", async (req, res) => {
             });
         }
         const { name } = req.body;
-        const schema = yup.object({
+        const schema = yup.object().shape({
             name: yup
                 .string()
                 .required("O campo nome é obrigatório!")

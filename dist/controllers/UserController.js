@@ -8,8 +8,8 @@ const router = express.Router();
 // cadastrar
 router.post("/usuario", async (req, res) => {
     try {
-        const { name, email, situationId } = req.body;
-        const schema = yup.object({
+        const data = req.body;
+        const schema = yup.object().shape({
             name: yup
                 .string()
                 .required("O campo nome é obrigatório!")
@@ -18,25 +18,30 @@ router.post("/usuario", async (req, res) => {
                 .string()
                 .required("O campo email é obrigatório!")
                 .email("Informe um email válido!"),
+            password: yup
+                .string()
+                .required("O campo senha e obrigatorio!")
+                .min(6, "O campo senha deve ter no minimo 6 caracteres!"),
             situationId: yup
                 .string()
                 .required("O campo situationId é obrigatório!"),
         });
-        await schema.validate({ name, email, situationId }, { abortEarly: false });
+        await schema.validate(data, { abortEarly: false });
         const userRepository = AppDataSource.getRepository(User);
-        const existeSituation = await userRepository.findOne({
-            where: { email }
+        const existeEmail = await userRepository.findOne({
+            where: { email: data.email }
         });
-        if (existeSituation) {
+        if (existeEmail) {
             res.status(400).json({
                 messagem: "Já existe um email cadastrado com esse nome!"
             });
             return;
         }
         const newUser = userRepository.create({
-            name,
-            email,
-            situation: { id: situationId },
+            name: data.name,
+            email: data.email,
+            password: data.password,
+            situation: { id: Number(data.situationId) },
         });
         await userRepository.save(newUser);
         res.status(201).json({
@@ -115,8 +120,8 @@ router.put("/usuario/:id", async (req, res) => {
                 messagem: "Id do usuário não encontrado!",
             });
         }
-        const { name, email, situationId } = req.body;
-        const schema = yup.object({
+        const data = req.body;
+        const schema = yup.object().shape({
             name: yup
                 .string()
                 .required("O campo nome é obrigatório!")
@@ -125,26 +130,31 @@ router.put("/usuario/:id", async (req, res) => {
                 .string()
                 .required("O campo email é obrigatório!")
                 .email("Informe um email válido!"),
+            password: yup
+                .string()
+                .required("O campo senha e obrigatorio!")
+                .min(6, "O campo senha deve ter no minimo 6 caracteres!"),
             situationId: yup
                 .string()
                 .required("O campo situationId é obrigatório!"),
         });
-        await schema.validate({ name, email, situationId }, { abortEarly: false });
-        const existeSituation = await userRepository.findOne({
+        await schema.validate(data, { abortEarly: false });
+        const existeEmail = await userRepository.findOne({
             where: {
-                email,
+                email: data.email,
                 id: Not(id),
             },
         });
-        if (existeSituation) {
+        if (existeEmail) {
             return res.status(400).json({
                 messagem: "Já existe um email cadastrado com esse nome!",
             });
         }
         userRepository.merge(user, {
-            name,
-            email,
-            situation: { id: Number(situationId) },
+            name: data.name,
+            email: data.email,
+            password: data.password,
+            situation: { id: Number(data.situationId) },
         });
         const update = await userRepository.save(user);
         return res.status(200).json({

@@ -13,6 +13,7 @@ let User = class User extends BaseEntity {
     id;
     name;
     email;
+    password;
     situation;
     createAt;
     updateAt;
@@ -29,6 +30,14 @@ __decorate([
     Column(),
     __metadata("design:type", String)
 ], User.prototype, "email", void 0);
+__decorate([
+    Column({
+        type: "varchar",
+        length: 255,
+        nullable: false,
+    }),
+    __metadata("design:type", String)
+], User.prototype, "password", void 0);
 __decorate([
     ManyToOne(() => Situation, (situation) => situation.users),
     JoinColumn({ name: "situationId" }),

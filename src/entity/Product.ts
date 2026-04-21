@@ -10,6 +10,28 @@ export class Product extends BaseEntity {
   @Column()
   name!: string;
 
+  @Column({
+    type: "varchar",
+    length: 255,
+    unique: true,
+    nullable: false,
+  })
+  slug!: string;
+
+  @Column({
+    type: "text",
+    nullable: false,
+  })
+  description!: string;
+
+  @Column({
+    type: "decimal",
+    precision: 10,
+    scale: 2,
+    nullable: false
+  })
+  price!: number;
+
   @ManyToOne(() => ProductCategory, (category) => category.products)
   @JoinColumn({ name: "productCategoryId" })
   productCategory!: ProductCategory;

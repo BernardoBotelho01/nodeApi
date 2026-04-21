@@ -58,12 +58,18 @@ export default class CreateProductSeeds {
         const product = [
             {
                 name: "Computador",
+                slug: "pc-de-mesa",
+                description: "Computador game",
+                price: 1500.00,
                 productCategory: eletronicos,
                 productSituation: ativo
 
             },
             {
                 name: "Arroz",
+                slug: "cristal",
+                description: "Tipo 1",
+                price: 1500.00,
                 productCategory: alimentos,
                 productSituation: ativo
             }

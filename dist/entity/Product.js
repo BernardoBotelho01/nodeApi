@@ -13,6 +13,9 @@ import { ProductSituation } from "./ProductSituation.js";
 let Product = class Product extends BaseEntity {
     id;
     name;
+    slug;
+    description;
+    price;
     productCategory;
     productSituation;
     createAt;
@@ -26,6 +29,31 @@ __decorate([
     Column(),
     __metadata("design:type", String)
 ], Product.prototype, "name", void 0);
+__decorate([
+    Column({
+        type: "varchar",
+        length: 255,
+        unique: true,
+        nullable: false,
+    }),
+    __metadata("design:type", String)
+], Product.prototype, "slug", void 0);
+__decorate([
+    Column({
+        type: "text",
+        nullable: false,
+    }),
+    __metadata("design:type", String)
+], Product.prototype, "description", void 0);
+__decorate([
+    Column({
+        type: "decimal",
+        precision: 10,
+        scale: 2,
+        nullable: false
+    }),
+    __metadata("design:type", Number)
+], Product.prototype, "price", void 0);
 __decorate([
     ManyToOne(() => ProductCategory, (category) => category.products),
     JoinColumn({ name: "productCategoryId" }),

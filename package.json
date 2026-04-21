@@ -17,6 +17,7 @@
     "express": "^5.2.1",
     "pg": "^8.18.0",
     "reflect-metadata": "^0.2.2",
+    "slugify": "^1.6.9",
     "typeorm": "^0.3.28",
     "yup": "^1.7.1"
   },

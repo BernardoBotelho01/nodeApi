@@ -5,51 +5,94 @@ import { Product } from "../entity/Product.js";
 import { PaginationService } from "../services/PaginationService.js";
 import * as yup from 'yup';
 import { Not } from "typeorm";
+import strict from "node:assert/strict";
+import slugify from "slugify";
 
 const router = express.Router();
 //cadastar
 router.post("/produto", async (req: Request, res: Response) => {
   try {
-    const { name, productCategoryId, productSituationId } = req.body;
+    const data = req.body;
 
-    const schema = yup.object({
+    const schema = yup.object().shape({
           name: yup
             .string()
             .required("O campo nome é obrigatório!")
             .min(3, "O nome deve ter no mínimo 3 caracteres!"),
-    
+          
+          slug: yup
+          .string()
+          .required("O campo slug é obrigatório!")
+          .min(3, "O campo slug deve ter no mínimo 3 caracteres!")
+          .max(255, "O campo slug deve ter no maximo 255 caracteres!"),
+
+          description: yup
+          .string()
+          .required("O campo descrição é obrigatório!")
+          .min(3, "O campo descrição deve ter no mínimo 3 caracteres!")
+          .max(255, "O campo descrição deve ter no maximo 255 caracteres!"),
+
+          price: yup
+          .number()
+          .typeError("O campo preço deve ser numérico!")
+          .required("O campo preço é obrigatório!")
+          .positive("O preço deve ser um valor positivo!")
+          .test(
+          "is-decimal",
+          "O preço deve ter no máximo duas casas decimais!",
+          (value) => value === undefined || Number(value.toFixed(2)) === value
+          ),
           productCategoryId: yup
-            .string()
-            .required("O campo productCategoryId é obrigatório!"),
+          .number()
+          .typeError("O campo categoria deve ser numérico!")
+          .required("O campo categoria é obrigatório!")
+          .integer("O campo categoria deve ser um numero inteiro!")
+          .positive("O campo categoria deve ser um valor positivo!"),
     
           productSituationId: yup
-            .string()
-            .required("O campo productSituationId é obrigatório!"),
+          .number()
+          .typeError("O campo situação deve ser numérico!")
+          .required("O campo situação é obrigatório!")
+          .integer("O campo situação deve ser um numero inteiro!")
+          .positive("O campo situação deve ser um valor positivo!"),
         });
     
-        await schema.validate(
-          { name, productCategoryId, productSituationId },
-          { abortEarly: false }
-        );
+        await schema.validate(data,{ abortEarly: false });
+
+        data.slug = slugify(data.slug, {lower: true, strict: true});
 
     const productRepository = AppDataSource.getRepository(Product);
 
-    const existeSituation = await productRepository.findOne({
-            where: {name}
+    const existeName = await productRepository.findOne({
+            where: {name: data.name}
         });
 
-        if(existeSituation){
+        if(existeName){
            res.status(400).json({
             messagem: "Já existe um produto cadastrado com esse nome!"
            });
            return;
         }
 
-    const newProduct = productRepository.create({
-      name,
-      productCategory: { id: productCategoryId },
-      productSituation: { id: productSituationId },
-    });
+    const existeSlug = await productRepository.findOne({
+            where: {slug: data.slug}
+        });
+
+        if(existeSlug){
+           res.status(400).json({
+            messagem: "Já existe um produto cadastrado com esse slug!"
+           });
+           return;
+        }
+
+  const newProduct = productRepository.create({
+  name: data.name,
+  slug: data.slug,
+  description: data.description,
+  price: data.price,
+  productCategory: { id: Number(data.productCategoryId) },
+  productSituation: { id: Number(data.productSituationId) },
+});
 
     await productRepository.save(newProduct);
 
@@ -141,46 +184,89 @@ router.put("/produto/:id", async (req: Request, res: Response) => {
       });
     }
 
-    const { name, productCategoryId, productSituationId } = req.body;
+    const data = req.body;
 
-    const schema = yup.object({
+    const schema = yup.object().shape({
       name: yup
         .string()
         .required("O campo nome é obrigatório!")
         .min(3, "O nome deve ter no mínimo 3 caracteres!"),
 
-      productCategoryId: yup
-        .string()
-        .required("O campo productCategoryId é obrigatório!"),
+      slug: yup
+          .string()
+          .required("O campo slug é obrigatório!")
+          .min(3, "O campo slug deve ter no mínimo 3 caracteres!")
+          .max(255, "O campo slug deve ter no maximo 255 caracteres!"),
 
-      productSituationId: yup
-        .string()
-        .required("O campo productSituationId é obrigatório!"),
-    });
+          description: yup
+          .string()
+          .required("O campo descrição é obrigatório!")
+          .min(3, "O campo descrição deve ter no mínimo 3 caracteres!"),
+
+          price: yup
+          .number()
+          .typeError("O campo preço deve ser numérico!")
+          .required("O campo preço é obrigatório!")
+          .positive("O preço deve ser um valor positivo!")
+          .test(
+          "is-decimal",
+          "O preço deve ter no máximo duas casas decimais!",
+          (value) => value === undefined || Number(value.toFixed(2)) === value
+          ),
+          productCategoryId: yup
+          .number()
+          .typeError("O campo categoria deve ser numérico!")
+          .required("O campo categoria é obrigatório!")
+          .integer("O campo categoria deve ser um numero inteiro!")
+          .positive("O campo categoria deve ser um valor positivo!"),
+    
+          productSituationId: yup
+          .number()
+          .typeError("O campo situação deve ser numérico!")
+          .required("O campo situação é obrigatório!")
+          .integer("O campo situação deve ser um numero inteiro!")
+          .positive("O campo situação deve ser um valor positivo!"),
+        });
 
     await schema.validate(
-      { name, productCategoryId, productSituationId },
+      data,
       { abortEarly: false }
     );
 
-    const existeSituation = await productRepository.findOne({
+    data.slug = slugify(data.slug, {lower: true, strict: true});
+
+    const existeName = await productRepository.findOne({
       where: {
-        name,
+        name: data.name,
         id: Not(id),
       },
     });
 
-    if (existeSituation) {
+    if (existeName) {
       return res.status(400).json({
         messagem: "Já existe um produto cadastrado com esse nome!",
       });
     }
 
+    const existeSlug = await productRepository.findOne({
+            where: {slug: data.slug}
+        });
 
-    productRepository.merge(product, {
-      name,
-      productCategory: { id: Number(productCategoryId) },
-      productSituation: { id: Number(productSituationId) },
+        if(existeSlug){
+           res.status(400).json({
+            messagem: "Já existe um produto cadastrado com esse slug!"
+           });
+           return;
+        }
+
+
+  productRepository.merge(product, {
+  name: data.name,
+  slug: data.slug,
+  description: data.description,
+  price: data.price,
+  productCategory: { id: Number(data.productCategoryId) },
+  productSituation: { id: Number(data.productSituationId) },
     });
 
     const update = await productRepository.save(product);

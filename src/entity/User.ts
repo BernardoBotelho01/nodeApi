@@ -12,6 +12,13 @@ export class User extends BaseEntity {
   @Column()
   email!: string;
 
+  @Column({
+    type: "varchar",
+    length: 255,
+    nullable: false,
+  })
+  password!: string;
+
   @ManyToOne(() => Situation, (situation) => situation.users)
   @JoinColumn({ name: "situationId" })
   situation!: Situation;

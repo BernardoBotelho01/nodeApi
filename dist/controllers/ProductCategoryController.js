@@ -101,7 +101,7 @@ router.put("/categoriaproduto/:id", async (req, res) => {
             });
         }
         const { name } = req.body;
-        const schema = yup.object({
+        const schema = yup.object().shape({
             name: yup
                 .string()
                 .required("O campo nome é obrigatório!")
