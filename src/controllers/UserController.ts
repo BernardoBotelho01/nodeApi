@@ -5,10 +5,11 @@ import {User} from "../entity/User.js"
 import { PaginationService } from "../services/PaginationService.js";
 import * as yup from 'yup';
 import { Not } from "typeorm";
-
+import bcrypt from "bcryptjs";
+import  verificarToken  from "../middlewares/authMiddleware.js";
 const router = express.Router();
 // cadastrar
-router.post("/usuario",async(req:Request, res:Response)=>{
+router.post("/usuario", verificarToken, async(req:Request, res:Response)=>{
     try{
 
     const data = req.body;
@@ -51,6 +52,8 @@ router.post("/usuario",async(req:Request, res:Response)=>{
            });
            return;
         }
+//senha criptografada
+    //data.password = await bcrypt.hash(data.password, 10);
 
     const newUser = userRepository.create({
       name: data.name,
@@ -83,7 +86,7 @@ router.post("/usuario",async(req:Request, res:Response)=>{
 });
 
 //listar
-router.get("/usuario",async(req:Request, res:Response)=>{
+router.get("/usuario", async(req:Request, res:Response)=>{
 
     try{
     const userRepository = AppDataSource.getRepository(User);
@@ -96,7 +99,7 @@ router.get("/usuario",async(req:Request, res:Response)=>{
     //Definir o limite de registro por páginas
         const limite = Number(req.query.limite) || 10;
     
-        const result = await PaginationService.paginate(userRepository, page, limite, {id: "DESC"});
+        const result = await PaginationService.paginate(userRepository, page, limite, {id: "DESC"}, ["situation"]);
     
         res.status(200).json(result);
         return
@@ -118,7 +121,10 @@ router.get("/usuario/:id",async(req:Request, res:Response)=>{
     try{
     const id = Number(req.params.id);
     const userRepository = AppDataSource.getRepository(User);
-    const user = await userRepository.findOneBy({id});
+    const user = await userRepository.findOne({
+    relations: ["situation"],
+    where: { id }
+});
 
     if(!user){
         return res.status(404).json({
@@ -136,8 +142,67 @@ router.get("/usuario/:id",async(req:Request, res:Response)=>{
         return
     }
 });
+//Editar senha
+router.put("/usuario-senha/:id",verificarToken, async (req: Request, res: Response) => {
+  try {
+    const id = Number(req.params.id);
+
+    const userRepository = AppDataSource.getRepository(User);
+
+    const user = await userRepository.findOne({
+      where: { id },
+      relations: ["situation"],
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        messagem: "Id do usuário não encontrado!",
+      });
+    }
+
+    const data = req.body;
+
+    const schema = yup.object().shape({
+      
+      password: yup
+      .string()
+      .required("O campo senha e obrigatorio!")
+      .min(6, "O campo senha deve ter no minimo 6 caracteres!"),
+
+    });
+
+    await schema.validate(
+      data,
+      { abortEarly: false }
+    );
+//senha criptografada
+    //data.password = await bcrypt.hash(data.password, 10);
+
+    userRepository.merge(user, {
+      password: data.password
+    });
+
+    const update = await userRepository.save(user);
+
+    return res.status(200).json({
+      messagem: "Senha atualizada com sucesso!",
+      user: update,
+    });
+  } catch (error) {
+   if(error instanceof yup.ValidationError){
+               res.status(400).json({
+               messagem: error.errors
+           });
+           return;
+        }
+    return res.status(500).json({
+      messagem: "Algo deu errado no processamento!",
+    });
+  }
+});
+
 //Atualizar
-router.put("/usuario/:id", async (req: Request, res: Response) => {
+router.put("/usuario/:id",verificarToken, async (req: Request, res: Response) => {
   try {
     const id = Number(req.params.id);
 
@@ -223,7 +288,7 @@ router.put("/usuario/:id", async (req: Request, res: Response) => {
 });
 
 //deletar
-router.delete("/usuario/:id",async(req:Request, res:Response)=>{
+router.delete("/usuario/:id",verificarToken, async(req:Request, res:Response)=>{
 
     try{
     const id = Number(req.params.id);

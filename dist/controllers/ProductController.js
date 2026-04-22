@@ -6,6 +6,7 @@ import * as yup from 'yup';
 import { Not } from "typeorm";
 import strict from "node:assert/strict";
 import slugify from "slugify";
+import verificarToken from "../middlewares/authMiddleware.js";
 const router = express.Router();
 //cadastar
 router.post("/produto", async (req, res) => {
@@ -103,7 +104,7 @@ router.get("/produto", async (req, res) => {
         const page = Number(req.query.page) || 1;
         //Definir o limite de registro por páginas
         const limite = Number(req.query.limite) || 10;
-        const result = await PaginationService.paginate(productRepository, page, limite, { id: "DESC" });
+        const result = await PaginationService.paginate(productRepository, page, limite, { id: "DESC" }, ["productCategory", "productSituation"]);
         res.status(200).json(result);
         return;
         //fim paginação
@@ -139,7 +140,7 @@ router.get("/produto/:id", async (req, res) => {
     }
 });
 //atualizar
-router.put("/produto/:id", async (req, res) => {
+router.put("/produto/:id", verificarToken, async (req, res) => {
     try {
         const id = Number(req.params.id);
         const productRepository = AppDataSource.getRepository(Product);
@@ -232,7 +233,7 @@ router.put("/produto/:id", async (req, res) => {
     }
 });
 //deletar
-router.delete("/produto/:id", async (req, res) => {
+router.delete("/produto/:id", verificarToken, async (req, res) => {
     try {
         const id = Number(req.params.id);
         const productRepository = AppDataSource.getRepository(Product);

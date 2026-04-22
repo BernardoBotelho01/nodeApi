@@ -5,6 +5,7 @@ import {ProductSituation} from "../entity/ProductSituation.js"
 import { PaginationService } from "../services/PaginationService.js";
 import * as yup from 'yup';
 import { Not } from "typeorm";
+import  verificarToken  from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
@@ -112,7 +113,7 @@ router.get("/situacaoproduto/:id",async(req:Request, res:Response)=>{
 });
 
 //atualizar
-router.put("/situacaoproduto/:id", async (req: Request, res: Response) => {
+router.put("/situacaoproduto/:id",verificarToken, async (req: Request, res: Response) => {
   try {
     const id = Number(req.params.id);
 
@@ -176,7 +177,7 @@ router.put("/situacaoproduto/:id", async (req: Request, res: Response) => {
   }
 });
 //deletar
-router.delete("/situacaoproduto/:id",async(req:Request, res:Response)=>{
+router.delete("/situacaoproduto/:id",verificarToken,async(req:Request, res:Response)=>{
 
     try{
     const id = Number(req.params.id);

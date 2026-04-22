@@ -1,6 +1,7 @@
 import { DataSource } from "typeorm";
 import { User } from "../entity/User.js";
 import { Situation } from "../entity/Situation.js";
+import bcrypt from "bcryptjs";
 export default class CreateUserSeeds {
     async run(dataSource) {
         console.log("Iniciando o seed para a tabela `User`...");
@@ -27,13 +28,15 @@ export default class CreateUserSeeds {
             {
                 name: "João Silva",
                 email: "joao@email.com",
-                password: "123456",
+                password: "123458",
+                recoverPassword: null,
                 situation: ativo
             },
             {
                 name: "Maria Souza",
                 email: "maria@email.com",
                 password: "123457",
+                recoverPassword: null,
                 situation: inativo
             }
         ];

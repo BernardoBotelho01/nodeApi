@@ -7,6 +7,7 @@ import * as yup from 'yup';
 import { Not } from "typeorm";
 import strict from "node:assert/strict";
 import slugify from "slugify";
+import  verificarToken  from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 //cadastar
@@ -128,7 +129,7 @@ router.get("/produto",async(req:Request, res:Response)=>{
     //Definir o limite de registro por páginas
         const limite = Number(req.query.limite) || 10;
     
-        const result = await PaginationService.paginate(productRepository, page, limite, {id: "DESC"});
+        const result = await PaginationService.paginate(productRepository, page, limite, {id: "DESC"}, ["productCategory", "productSituation"]);
     
         res.status(200).json(result);
         return
@@ -171,7 +172,7 @@ router.get("/produto/:id",async(req:Request, res:Response)=>{
 });
 
 //atualizar
-router.put("/produto/:id", async (req: Request, res: Response) => {
+router.put("/produto/:id",verificarToken, async (req: Request, res: Response) => {
   try {
     const id = Number(req.params.id);
 
@@ -290,7 +291,7 @@ router.put("/produto/:id", async (req: Request, res: Response) => {
 });
 
 //deletar
-router.delete("/produto/:id",async(req:Request, res:Response)=>{
+router.delete("/produto/:id",verificarToken, async(req:Request, res:Response)=>{
 
     try{
     const id = Number(req.params.id);

@@ -6,6 +6,7 @@ interface paginationResult<T>{
     currentPage: number;
     lastPage: number;
     totalRecords: number;
+    relations?: string[];
 }
 
 export class PaginationService{
@@ -14,7 +15,8 @@ export class PaginationService{
         repository: Repository<T>,
         page: number = 1,
         limite: number = 10,
-        order: FindOptionsOrder<T> = {}
+        order: FindOptionsOrder<T> = {},
+        relations?: string[],
     ): Promise<paginationResult<T>>{
 
         const totalRecords = await repository.count();
@@ -31,6 +33,7 @@ export class PaginationService{
             take: limite,
             skip: offset,
             order,
+            ...(relations ? { relations } : {})
         });
 
         return{
@@ -38,7 +41,8 @@ export class PaginationService{
             data,
             currentPage: page,
             lastPage,
-            totalRecords
+            totalRecords,
+            ...(relations ? { relations } : {})
         }
     }
 }

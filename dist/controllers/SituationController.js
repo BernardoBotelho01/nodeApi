@@ -4,6 +4,7 @@ import { Situation } from "../entity/Situation.js";
 import { PaginationService } from "../services/PaginationService.js";
 import * as yup from 'yup';
 import { Not } from "typeorm";
+import verificarToken from "../middlewares/authMiddleware.js";
 const router = express.Router();
 //cadastrar
 router.post("/situacao", async (req, res) => {
@@ -90,7 +91,7 @@ router.get("/situacao/:id", async (req, res) => {
     }
 });
 //atualizar
-router.put("/situacao/:id", async (req, res) => {
+router.put("/situacao/:id", verificarToken, async (req, res) => {
     try {
         const id = Number(req.params.id);
         const situationRepository = AppDataSource.getRepository(Situation);
@@ -140,7 +141,7 @@ router.put("/situacao/:id", async (req, res) => {
     }
 });
 //deletar
-router.delete("/situacao/:id", async (req, res) => {
+router.delete("/situacao/:id", verificarToken, async (req, res) => {
     try {
         const id = Number(req.params.id);
         const situationRepository = AppDataSource.getRepository(Situation);

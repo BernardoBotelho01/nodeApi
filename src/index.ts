@@ -8,7 +8,8 @@ import ProductSituationController from "./controllers/ProductSituationControllle
 import ProductController from "./controllers/ProductController.js"
 import express from "express";
 import dotenv from "dotenv";
-dotenv.config();
+dotenv.config({ override: true });
+
 
 //biblioteca para permitir conexão externa
 
