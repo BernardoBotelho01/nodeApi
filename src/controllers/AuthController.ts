@@ -107,7 +107,7 @@ router.post("/usuario", verificarToken, async(req:Request, res:Response)=>{
             }
 
         res.status(500).json({
-            messagem: "Algo deu errado no processamento!"
+            messagem: "Erro ao cadastrar o usuário!"
         });
     }
 });
@@ -202,7 +202,7 @@ Esta mensagem foi enviada pela empresa NodeApi.`,
     }
 
     return res.status(500).json({
-      messagem: "Algo deu errado no processamento!",
+      messagem: "Erro ao enviar o email de recuperação de senha!",
     });
   }
 });
@@ -251,7 +251,7 @@ router.post("/validar-senha", async (req: Request, res: Response) => {
     }
 
     return res.status(500).json({
-      messagem: "A chave recuperar senha e invalida!",
+      messagem: "Erro ao validar a chave de recuperação de senha!",
     });
   }
 });
@@ -311,7 +311,7 @@ router.put("/atualizar-senha", async (req: Request, res: Response) => {
     }
 
     return res.status(500).json({
-      messagem: "A chave recuperar senha e invalida!",
+      messagem: "Erro ao atualizar a senha do usuário!",
     });
   }
 });

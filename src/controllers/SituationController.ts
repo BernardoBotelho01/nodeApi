@@ -108,7 +108,7 @@ router.get("/situacao/:id",async(req:Request, res:Response)=>{
     }
     catch(error){
         res.status(500).json({
-            messagem: "Algo deu errado no processamento!"
+            messagem: "Erro ao buscar a situação pelo ID informado!"
         });
         return
     }
@@ -173,7 +173,7 @@ router.put("/situacao/:id",verificarToken, async (req: Request, res: Response) =
     }
 
     return res.status(500).json({
-      messagem: "Algo deu errado no processamento!",
+      messagem: "Erro ao atualizar a situação!",
     });
   }
 });
@@ -202,7 +202,7 @@ router.delete("/situacao/:id",verificarToken,async(req:Request, res:Response)=>{
     }
     catch(error){
         res.status(500).json({
-            messagem: "Algo deu errado no processamento!"
+            messagem: "Erro ao remover a situação!"
         });
         return
     }

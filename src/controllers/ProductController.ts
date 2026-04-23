@@ -165,7 +165,7 @@ router.get("/produto/:id",async(req:Request, res:Response)=>{
     }
     catch(error){
         res.status(500).json({
-            messagem: "Algo deu errado no processamento!"
+            messagem: "Erro ao buscar o produto pelo ID informado!"
         });
         return
     }
@@ -285,7 +285,7 @@ router.put("/produto/:id",verificarToken, async (req: Request, res: Response) =>
         }
 
     return res.status(500).json({
-      messagem: "Algo deu errado no processamento!",
+      messagem: "Erro ao atualizar os dados do produto!",
     });
   }
 });
@@ -312,7 +312,7 @@ router.delete("/produto/:id",verificarToken, async(req:Request, res:Response)=>{
     }
     catch(error){
         res.status(500).json({
-            messagem: "Algo deu errado no processamento!"
+            messagem: "Erro ao remover o produto!"
         });
         return
     }

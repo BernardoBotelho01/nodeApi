@@ -107,7 +107,7 @@ router.get("/categoriaproduto/:id",async(req:Request, res:Response)=>{
     }
     catch(error){
         res.status(500).json({
-            messagem: "Algo deu errado no processamento!"
+            messagem: "Erro ao buscar a categoria do produto pelo ID informado!"
         });
         return
     }
@@ -174,7 +174,7 @@ router.put("/categoriaproduto/:id",verificarToken, async(req:Request, res:Respon
                    return;
                 }
         res.status(500).json({
-            messagem: "Algo deu errado no processamento!"
+            messagem: "Erro ao atualizar a categoria do produto!"
         });
         return
     }
@@ -202,7 +202,7 @@ router.delete("/categoriaproduto/:id",verificarToken, async(req:Request, res:Res
     }
     catch(error){
         res.status(500).json({
-            messagem: "Algo deu errado no processamento!"
+            messagem: "Erro ao remover a categoria do produto!"
         });
         return
     }

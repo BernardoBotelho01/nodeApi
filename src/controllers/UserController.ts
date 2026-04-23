@@ -80,7 +80,7 @@ router.post("/usuario", verificarToken, async(req:Request, res:Response)=>{
             }
 
         res.status(500).json({
-            messagem: "Algo deu errado no processamento!"
+            messagem: "Erro ao cadastrar o usuário!"
         });
     }
 });
@@ -137,7 +137,7 @@ router.get("/usuario/:id",async(req:Request, res:Response)=>{
     }
     catch(error){
         res.status(500).json({
-            messagem: "Algo deu errado no processamento!"
+            messagem: "Erro ao buscar o usuário pelo ID informado!"
         });
         return
     }
@@ -196,7 +196,7 @@ router.put("/usuario-senha/:id",verificarToken, async (req: Request, res: Respon
            return;
         }
     return res.status(500).json({
-      messagem: "Algo deu errado no processamento!",
+      messagem: "Erro ao atualizar a senha do usuário!",
     });
   }
 });
@@ -282,7 +282,7 @@ router.put("/usuario/:id",verificarToken, async (req: Request, res: Response) =>
            return;
         }
     return res.status(500).json({
-      messagem: "Algo deu errado no processamento!",
+      messagem: "Erro ao atualizar os dados do usuário!",
     });
   }
 });
@@ -310,7 +310,7 @@ router.delete("/usuario/:id",verificarToken, async(req:Request, res:Response)=>{
     }
     catch(error){
         res.status(500).json({
-            messagem: "Algo deu errado no processamento!"
+            messagem: "Erro ao remover o usuário!"
         });
         return
     }
